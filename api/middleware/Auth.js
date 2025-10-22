@@ -9,7 +9,7 @@ const Authorization = (req, res, next) => {
     const bearer = authToken.split(" ");
     const token = bearer[1];
     //Validando o token
-    jwt.verify(token, userController.jwtSecret, (error, data) => {
+    jwt.verify(token, usuarioController.jwtSecret, (error, data) => {
       if (error) {
         res.status(401).json({ error: "token invalido" });
         // token valido

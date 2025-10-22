@@ -12,27 +12,29 @@ import Usuarios from "./models/Usuarios.js";
 // importando as rotas
 import checkpointRoutes from "./routes/checkpointRoutes.js";
 import modelagemRoutes from "./routes/modelagemRoutes.js";
-import quizzRoutes from "./routes/quizzRoutes.js";
+import quizRoutes from "./routes/quizRoutes.js";
 import rotaRoutes from "./routes/rotaRoutes.js";
 import usuarioRoutes from "./routes/usuarioRoutes.js";
 
 // Configurações do Express
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use('/', checkpointRoutes);
-app.use('/', modelagemRoutes);
-app.use('/', quizzRoutes);
-app.use('/', rotaRoutes);
-app.use('/', usuarioRoutes);
+app.use('/checkpoint', checkpointRoutes);
+app.use('/modelagem', modelagemRoutes);
+app.use('/quiz', quizRoutes);
+app.use('/rota', rotaRoutes);
+app.use('/usuarios', usuarioRoutes);
 
 // Iniciando a conexão com o banco de dados do MongoDB
-mongoose.connect("mongodb://127.0.0.1:27017/api-memori")
-
-// Rodando a API na porta 4000
 const port = 4000;
-app.listen(port, (error) => {
-  if (error) {
-    console.log(error);
-  }
-  console.log(`API rodando em http://localhost:${port}.`);
-}); 
+
+mongoose.connect("mongodb://127.0.0.1:27017/api-memori")
+  .then(() => {
+    console.log('Conectado ao MongoDB com sucesso!');
+    app.listen(port, () => {
+      console.log(`API rodando em http://localhost:${port}`);
+    });
+  })
+  .catch((error) => {
+    console.error('Erro ao conectar ao MongoDB:', error);
+  });

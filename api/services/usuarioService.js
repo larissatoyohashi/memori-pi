@@ -1,40 +1,52 @@
-import Usuarios from "../models/Usuarios.js";
+import Usuario from '../models/Usuarios.js';
 
-class UsuariosService {
+class usuarioService {
     async getAll() {
         try {
-            const Usuarioss = await Usuarios.find();
-            return Usuarioss;
+            const usuarios = await Usuario.find();
+            return usuarios;
         } catch (error) {
             console.log(error);
-        }   
+        }
     }
 
-    async Create(   
-        nome,
-        nomeUsuario,
-        emailUsuario,
-        senhaUsuario,
-        permissao
-    ) { 
+    async Create(nome, nomeUsuario, emailUsuario, senhaUsuario, permissao) { 
         try {
-            const newUsuario = new Usuarios({
-                nome,   
+            const newUsuario = new Usuario({
+                nome,
                 nomeUsuario,
-                emailUsuario,
+                emailUsuario,  
                 senhaUsuario,
                 permissao,
             });
             await newUsuario.save();
         } catch (error) {
             console.log(error);
-        }       
+        }
     }
-
+    
     async Delete(id) {
         try {
-            await Usuarios.findByIdAndDelete(id);   
-            console.log(`Usuario com id ${id} deletada com sucesso!`);
+            await Usuario.findByIdAndDelete(id);   
+            console.log(`Usuario com id ${id} deletado com sucesso!`);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async Update(id, nome, nomeUsuario, emailUsuario, senhaUsuario, permissao) {
+        try {
+            const usuario = await Usuario.findByIdAndUpdate(id, {
+                nome,
+                nomeUsuario,
+                emailUsuario,  
+                senhaUsuario,
+                permissao,
+            },
+            { new: true }
+        );
+            console.log(`Usuario com id ${id} atualizado com sucesso!`);
+            return usuario;
         } catch (error) {
             console.log(error);
         }
@@ -42,12 +54,12 @@ class UsuariosService {
 
     async getOne(id) {
         try {
-            const Usuarios = await Usuarios.findOne({ _id: id });    
-            return Usuarios;
+            const usuario = await Usuario.findOne({ _id: id });
+            return usuario;
         } catch (error) {
             console.log(error);
         }
     }
 }
 
-export default new UsuariosService();
+export default new usuarioService();

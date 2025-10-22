@@ -1,13 +1,13 @@
 import express from 'express';
 const usuarioRoutes = express.Router();
 import usuarioController from '../controllers/usuarioController.js';  
-import Auth from "../middleware/Auth.js";
 
-usuarioRoutes.get('/usuarios', Auth.Authorization, usuarioController.getAllUsuarios);
-usuarioRoutes.post('/usuarios', usuarioController.createUsuario);
-usuarioRoutes.delete('/usuarios/:id', Auth.Authorization, usuarioController.deleteUsuario);
-usuarioRoutes.put('/usuarios/:id', Auth.Authorization, usuarioController.updateUsuario);
-usuarioRoutes.get('/usuarios/:id', Auth.Authorization, usuarioController.getOneUsuario);
+usuarioRoutes.get('/', usuarioController.getAllUsuarios);
+usuarioRoutes.post('/', usuarioController.createUsuario);
+usuarioRoutes.delete('/:id', usuarioController.deleteUsuario);
+usuarioRoutes.put('/:id', usuarioController.updateUsuario);
+usuarioRoutes.get('/:id', usuarioController.getOneUsuario);
+usuarioRoutes.post('/auth', usuarioController.LoginUsuario);
 
 export default usuarioRoutes;
 

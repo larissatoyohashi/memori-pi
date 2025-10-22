@@ -4,10 +4,10 @@ import checkpointController from "../controllers/checkpointController.js";
 
 // import Auth from "../middleware/Auth.js";
 
-checkpointRoutes.get("/checkpoints", checkpointController.getAllCheckpoints);
-checkpointRoutes.post("/checkpoints", checkpointController.createCheckpoint);
-checkpointRoutes.delete("/checkpoints/:id", checkpointController.deleteCheckpoint);
-checkpointRoutes.put("/checkpoints/:id", checkpointController.updateCheckpoint);
-checkpointRoutes.get("/checkpoints/:id", checkpointController.getOneCheckpoint);
+checkpointRoutes.get("/", checkpointController.getAllCheckpoints);
+checkpointRoutes.post("/", checkpointController.createCheckpoint);
+checkpointRoutes.delete("/:id", checkpointController.deleteCheckpoint);
+checkpointRoutes.put("/:id", checkpointController.updateCheckpoint);
+checkpointRoutes.get("/:id", checkpointController.getOneCheckpoint);
 
 export default checkpointRoutes;

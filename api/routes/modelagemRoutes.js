@@ -4,10 +4,10 @@ import modelagemController from "../controllers/modelagemController.js";
 
 // import Auth from "../middleware/Auth.js";
 
-modelagemRoutes.get("/modelagens", modelagemController.getAllModelagens);
-modelagemRoutes.post("/modelagens", modelagemController.createModelagem);
-modelagemRoutes.delete("/modelagens/:id", modelagemController.deleteModelagem);
-modelagemRoutes.put("/modelagens/:id", modelagemController.updateModelagem);
-modelagemRoutes.get("/modelagens/:id", modelagemController.getOneModelagem);
+modelagemRoutes.get("/", modelagemController.getAllModelagens);
+modelagemRoutes.post("/", modelagemController.createModelagem);
+modelagemRoutes.delete("/:id", modelagemController.deleteModelagem);
+modelagemRoutes.put("/:id", modelagemController.updateModelagem);
+modelagemRoutes.get("/:id", modelagemController.getOneModelagem);
 
 export default modelagemRoutes;

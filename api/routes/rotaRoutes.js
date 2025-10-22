@@ -1,12 +1,11 @@
 import express from 'express';
 const rotaRoutes = express.Router();
 import rotaController from '../controllers/rotaController.js';
-import Auth from "../middleware/Auth.js";
 
-rotaRoutes.get('/rotas', Auth.Authorization, rotaController.getAllRotas);
-rotaRoutes.post('/rotas', Auth.Authorization, rotaController.createRota);
-rotaRoutes.delete('/rotas/:id', Auth.Authorization, rotaController.deleteRota);
-rotaRoutes.put('/rotas/:id', Auth.Authorization, rotaController.updateRota);
-rotaRoutes.get('/rotas/:id', Auth.Authorization, rotaController.getOneRotas);
+rotaRoutes.get('/', rotaController.getAllRotas);
+rotaRoutes.post('/', rotaController.createRota);
+rotaRoutes.delete('/:id', rotaController.deleteRota);
+rotaRoutes.put('/:id', rotaController.updateRota);
+rotaRoutes.get('/:id', rotaController.getOneRota);
 
 export default rotaRoutes;

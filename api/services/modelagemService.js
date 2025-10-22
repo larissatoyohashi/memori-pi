@@ -10,12 +10,12 @@ class modelagemService {
     }
   }
 
-  async Create(nomeModelagem, nomeCidade, arquivoModelagens, arquivoQrCode, nomeCheckpoint) {
+  async Create(nomeModelagem, nomeCidade, arquivoModelagem, arquivoQrCode, nomeCheckpoint) {
     try {
       const newModelagem = new Modelagem({
         nomeModelagem,
         nomeCidade,
-        arquivoModelagens,
+        arquivoModelagem,
         arquivoQrCode,
         nomeCheckpoint,
       });
@@ -34,21 +34,14 @@ class modelagemService {
     }
   }
 
-  async Update(
-    id,
-    nomeModelagem,
-    nomeCidade,
-    arquivoModelagens,
-    arquivoQrCode,
-    nomeCheckpoint,
-  ) {
+  async Update(id,nomeModelagem,nomeCidade,arquivoModelagem,arquivoQrCode,nomeCheckpoint) {
     try {
       const modelagem = await Modelagem.findByIdAndUpdate(
         id,
         {
           nomeModelagem,
           nomeCidade,
-          arquivoModelagens,
+          arquivoModelagem,
           arquivoQrCode,
           nomeCheckpoint,
         },

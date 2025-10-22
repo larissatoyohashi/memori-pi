@@ -80,13 +80,11 @@ export const deleteCheckpoint = (id) => api.delete(`/checkpoints/${id}`);
 
 
 // --- Rotas ---
-// (Presumindo que você tenha rotas para buscar os nomes das rotas)
-
 /**
  * Busca todas as rotas disponíveis (para o dropdown).
  * Rota: GET /rotas (Exemplo)
  */
-export const getRotas = () => api.get('/rotas'); // ATENÇÃO: Confirme este endpoint com seu time de back-end.
+export const getRotas = () => api.get('/rotas'); 
 
 
 export default api;

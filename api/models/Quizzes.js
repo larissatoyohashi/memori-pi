@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const quizzesSchema = new mongoose.Schema({
     pergunta: String,
-    checkpointQuizz: String,
+    checkpointQuiz: String,
     alternativaA: String,
     alternativaB: String,
     alternativaC: String,

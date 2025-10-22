@@ -9,14 +9,15 @@ class checkpointService {
       console.log(error);
     }
   }
-async Create({
+  
+async Create(
   nomeCheckpoint,
   latitudeCheckpoint,
   longitudeCheckpoint,
   tituloRota,
   descricaoCheckpoint,
   imagemCheckpoint,
-}) {
+) {
   try {
     const newCheckpoint = new Checkpoint({
       nomeCheckpoint,
