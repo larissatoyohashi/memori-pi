@@ -1,11 +1,13 @@
 import express from 'express';
 const rotaRoutes = express.Router();
 import rotaController from '../controllers/rotaController.js';
+import {uploadRota} from "../middleware/multerConfig.js";
 
 rotaRoutes.get('/', rotaController.getAllRotas);
-rotaRoutes.post('/', rotaController.createRota);
 rotaRoutes.delete('/:id', rotaController.deleteRota);
-rotaRoutes.put('/:id', rotaController.updateRota);
 rotaRoutes.get('/:id', rotaController.getOneRota);
+rotaRoutes.post("/", uploadRota.single('capaRota'), rotaController.createRota);
+rotaRoutes.put("/:id", uploadRota.single('capaRota'), rotaController.updateRota);
+
 
 export default rotaRoutes;

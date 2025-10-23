@@ -2,89 +2,60 @@
 
 import axios from 'axios';
 
-// Instância do Axios configurada para usar o proxy do Next.js (via next.config.js)
+// Instância do Axios
 const api = axios.create({
-  baseURL: '/api' 
+  baseURL: '/api' 
 });
 
-/**
- * Mapeamento das suas rotas para as funções do service:
- *
- * 1. checkpointRoutes.get("/checkpoints", ...);
- * -> getCheckpoints()
- *
- * 2. checkpointRoutes.post("/checkpoints", ...);
- * -> createCheckpoint(formData)
- *
- * 3. checkpointRoutes.delete("/checkpoints/:id", ...);
- * -> deleteCheckpoint(id)
- *
- * 4. checkpointRoutes.put("/checkpoints/:id", ...); // Corrigi o .put("checkpoints/:id")
- * -> updateCheckpoint(id, formData)
- *
- * 5. checkpointRoutes.get("/checkpoints/:id", ...); // Corrigi o .get("checkpoints/:id")
- * -> getOneCheckpoint(id)
- *
- * 6. (Ainda precisamos das rotas de Rotas, ex: /api/rotas)
- * -> getRotas()
- */
-
-
 // --- Checkpoints ---
-
-/**
- * Busca todos os checkpoints.
- * Rota: GET /checkpoints
- */
-export const getCheckpoints = () => api.get('/checkpoints');
-
-/**
- * Busca um único checkpoint pelo ID.
- * Rota: GET /checkpoints/:id
- */
-export const getOneCheckpoint = (id) => api.get(`/checkpoints/${id}`);
-
-/**
- * Cria um novo checkpoint.
- * Rota: POST /checkpoints
- * @param {FormData} formData - Dados do formulário (incluindo imagem).
- */
-export const createCheckpoint = (formData) => {
-  return api.post('/checkpoints', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data' // Garante o header para upload
-    }
-  });
-};
-
-/**
- * Atualiza um checkpoint existente.
- * Rota: PUT /checkpoints/:id
- * @param {string|number} id - O ID do checkpoint a ser atualizado.
- * @param {FormData} formData - Os novos dados (incluindo, opcionalmente, uma nova imagem).
- */
-export const updateCheckpoint = (id, formData) => {
-  return api.put(`/checkpoints/${id}`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data' // Necessário se a imagem puder ser atualizada
-    }
-  });
-};
-
-/**
- * Exclui um checkpoint.
- * Rota: DELETE /checkpoints/:id
- * @param {string|number} id - O ID do checkpoint a ser excluído.
- */
-export const deleteCheckpoint = (id) => api.delete(`/checkpoints/${id}`);
-
+export const getCheckpoints = () => api.get('/checkpoint');
+export const getOneCheckpoint = (id) => api.get(`/checkpoint/${id}`);
+export const createCheckpoint = (formData) => api.post('/checkpoint', formData);
+export const updateCheckpoint = (id, formData) => api.put(`/checkpoint/${id}`, formData);
+export const deleteCheckpoint = (id) => api.delete(`/checkpoint/${id}`);
 
 // --- Rotas ---
-/**
- * Busca todas as rotas disponíveis (para o dropdown).
- * Rota: GET /rotas (Exemplo)
- */
-export const getRotas = () => api.get('/rotas'); 
+export const getRotas = () => api.get('/rota'); 
+export const getOneRota = (id) => api.get(`/rota/${id}`);
+export const createRota = (formData) => api.post('/rota', formData);
+export const updateRota = (id, formData) => api.put(`/rota/${id}`, formData);
+export const deleteRota = (id) => api.delete(`/rota/${id}`);
 
+// --- Quizzes (NOVOS) ---
+
+/**
+ * Busca todos os quizzes.
+ * Rota: GET /quiz
+ */
+export const getQuizzes = () => api.get('/quiz');
+
+/**
+ * Busca um único quiz pelo ID.
+ * Rota: GET /quiz/:id
+ */
+export const getOneQuiz = (id) => api.get(`/quiz/${id}`);
+
+/**
+ * Cria um novo quiz. (Envia JSON, não FormData)
+ * Rota: POST /quiz
+ * @param {object} quizData - Dados do quiz em JSON.
+ */
+export const createQuiz = (quizData) => {
+  return api.post('/quiz', quizData); // Envia JSON
+};
+
+/**
+ * Atualiza um quiz existente. (Envia JSON)
+ * Rota: PUT /quiz/:id
+ */
+export const updateQuiz = (id, quizData) => {
+  return api.put(`/quiz/${id}`, quizData); // Envia JSON
+};
+
+/**
+ * Exclui um quiz.
+ * Rota: DELETE /quiz/:id
+ */
+export const deleteQuiz = (id) => api.delete(`/quiz/${id}`);
 
 export default api;

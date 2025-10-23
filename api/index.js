@@ -19,11 +19,15 @@ import usuarioRoutes from "./routes/usuarioRoutes.js";
 // Configurações do Express
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use('/checkpoint', checkpointRoutes);
-app.use('/modelagem', modelagemRoutes);
-app.use('/quiz', quizRoutes);
-app.use('/rota', rotaRoutes);
-app.use('/usuarios', usuarioRoutes);
+
+app.use(express.static('public'));
+
+// Adicione o prefixo /api/ em todas as rotas
+app.use('/api/checkpoint', checkpointRoutes);
+app.use('/api/modelagem', modelagemRoutes);
+app.use('/api/quiz', quizRoutes);
+app.use('/api/rota', rotaRoutes);
+app.use('/api/usuario', usuarioRoutes);
 
 // Iniciando a conexão com o banco de dados do MongoDB
 const port = 4000;

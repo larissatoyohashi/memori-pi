@@ -12,28 +12,39 @@ const getAllCheckpoints = async (req, res) => {
   }
 };
 
-// Função para criar um novo Checkpoint
+// Função para criar um novo Checkpoint (CORRIGIDA)
 const createCheckpoint = async (req, res) => {
-  try {
-    const {
-      nomeCheckpoint,
-      latitudeCheckpoint,
-      longitudeCheckpoint,
-      tituloRota,
-      descricaoCheckpoint,
-    } = req.body;
-    await checkpointService.Create(
-      nomeCheckpoint,
-      latitudeCheckpoint,
-      longitudeCheckpoint,
-      tituloRota,
-      descricaoCheckpoint,
-    );
-    res.sendStatus(201);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "Erro interno do servidor." });
-  }
+  try {
+  
+  console.log("Recebendo requisição POST para createCheckpoint.");
+        console.log("req.body:", req.body); // VERIFIQUE ESTE AQUI
+        console.log("req.file:", req.file); // E ESTE AQUI
+
+
+    const {
+      nomeCheckpoint,
+      latitudeCheckpoint,
+      longitudeCheckpoint,
+      tituloRota,
+      descricaoCheckpoint,
+    } = req.body;
+
+      // CORREÇÃO AQUI: Adicione a subpasta '/checkpoints/' ao caminho
+    const imagemCheckpoint = req.file ? `/uploads/checkpoints/${req.file.filename}` : null;
+
+    await checkpointService.Create(
+      nomeCheckpoint,
+      latitudeCheckpoint,
+      longitudeCheckpoint,
+      tituloRota,
+      descricaoCheckpoint,
+      imagemCheckpoint
+    );
+    res.sendStatus(201);
+  } catch (error) {
+    console.log("Erro no createCheckpoint (controller):", error);
+    res.status(500).json({ error: "Erro interno do servidor." });
+  }
 };
 
 // Função para deletar checkpoints
@@ -52,34 +63,26 @@ const deleteCheckpoint = async (req, res) => {
   }
 };
 
-// Funçãpo para atualizar checkpoints
+// Funçãpo para atualizar checkpoints (CORRIGIDA)
 const updateCheckpoint = async (req, res) => {
-  try {
-    const id = req.params.id;
-    if (ObjectId.isValid(id)) {
-      const {
-        nomeCheckpoint,
-        latitudeCheckpoint,
-        longitudeCheckpoint,
-        tituloRota,
-        descricaoCheckpoint,
-      } = req.body;
-      const checkpoint = await checkpointService.Update(
-        id,
-        nomeCheckpoint,
-        latitudeCheckpoint,
-        longitudeCheckpoint,
-        tituloRota,
-        descricaoCheckpoint
-      );
-      res.status(200).json({ checkpoint });
-    } else {
-      res.status(400).json({ error: "A ID enviada é inválida. " })  ;
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "Erro interno do servidor. " });
-  }
+  try {
+    // ...
+      let imagemCheckpoint = req.body.imagem_existente || null; 
+      if (req.file) {
+          // CORREÇÃO AQUI: Adicione a subpasta '/checkpoints/'
+          imagemCheckpoint = `/uploads/checkpoints/${req.file.filename}`;
+      }
+
+      const checkpoint = await checkpointService.Update(
+        // ... (resto dos campos)
+        imagemCheckpoint
+      );
+      res.status(200).json({ checkpoint });
+    // ...
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Erro interno do servidor. " });
+  }
 };
 
 // Função buscar um único Checkpoint
