@@ -5,7 +5,11 @@ const usuariosSchema = new mongoose.Schema({
     nomeUsuario: String,
     emailUsuario: String,
     senhaUsuario: String,
-    permissao: String,
+    permissao: {
+        type: Boolean,    
+        required: true,    
+        default: false  
+    }
 });
 const Usuarios = mongoose.model("Usuarios", usuariosSchema);
 export default Usuarios;

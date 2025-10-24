@@ -5,10 +5,10 @@ const modelagensSchema = new mongoose.Schema({
     nomeCidade: String,
     arquivoModelagem: String,
     arquivoQrCode: String,
-    nomeCheckpoint:[{
+    nomeCheckpoint:{
         type: String,
         ref: 'Checkpoint'
-    }]
+    }
 });
 const Modelagens = mongoose.model("Modelagens", modelagensSchema);
 export default Modelagens;

@@ -15,15 +15,23 @@ class modelagemService {
       const newModelagem = new Modelagem({
         nomeModelagem,
         nomeCidade,
-        arquivoModelagem,
-        arquivoQrCode,
-        nomeCheckpoint,
+        arquivoModelagem, // Path da Pasta
+        arquivoQrCode,    // Path do QR Code
+        nomeCheckpoint,   // String Simples
       });
-      await newModelagem.save();
+
+      console.log("[SERVICE] Instância Mongoose criada. Tentando salvar...");
+      await newModelagem.save(); // <<< O ERRO PODE ESTAR AQUI
+      console.log("[SERVICE] Modelagem salva no DB com SUCESSO!"); // <<< ESTE LOG APARECE?
+
     } catch (error) {
-      console.log(error);
+      console.error("!!! [SERVICE] ERRO ao criar/salvar Modelagem !!!");
+      console.error("Erro do Mongoose/DB:", error);
+      // É crucial re-lançar o erro para o controller saber que falhou
+      throw error;
     }
   }
+
 
   async Delete(id) {
     try {
