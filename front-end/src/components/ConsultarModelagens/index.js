@@ -2,10 +2,8 @@ import { useState, useEffect } from 'react';
 // 1. Adjust CSS module import if needed
 import style from "@/components/ConsultarModelagens/ConsultarModelagens.module.css";
 import dynamic from 'next/dynamic';
-// 2. Import API functions
 import { getModelagens, createModelagem, deleteModelagem, getCheckpoints } from '@/services/api';
 
-// Dynamically import the 3D viewer only on the client-side
 const ModalViewer3D = dynamic(
     () => import('@/components/ModalViewer3D'),
     { ssr: false }
@@ -22,21 +20,17 @@ const ConsultarModelagens = () => {
     const [nomeCidade, setNomeCidade] = useState('');
     const [nomeCheckpoint, setNomeCheckpoint] = useState(''); // Checkpoint name
 
-    // States for File Uploads (match multer fields)
     const [arquivoQrCodeFile, setArquivoQrCodeFile] = useState(null); // File object
     const [arquivoQrCodeFileName, setArquivoQrCodeFileName] = useState(''); // Display name
     const [arquivoModelagemFile, setArquivoModelagemFile] = useState(null); // File object (ZIP)
     const [arquivoModelagemFileName, setArquivoModelagemFileName] = useState(''); // Display name
 
-    // --- States for Dynamic Data ---
     const [modelagens, setModelagens] = useState([]); // List for table
     const [checkpoints, setCheckpoints] = useState([]); // List for dropdown
 
-    // --- State for 3D Modal ---
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modeloSelecionadoUrl, setModeloSelecionadoUrl] = useState(''); // URL/Path for the modal
 
-    // --- useEffect to Fetch Initial Data ---
     useEffect(() => {
         // Fetch Cities
         setIsLoadingCities(true);

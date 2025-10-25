@@ -17,8 +17,8 @@ const createCheckpoint = async (req, res) => {
   try {
   
   console.log("Recebendo requisição POST para createCheckpoint.");
-        console.log("req.body:", req.body); // VERIFIQUE ESTE AQUI
-        console.log("req.file:", req.file); // E ESTE AQUI
+        console.log("req.body:", req.body); 
+        console.log("req.file:", req.file); 
 
 
     const {
