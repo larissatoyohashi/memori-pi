@@ -44,18 +44,21 @@ class modelagemService {
 
   async Update(id,nomeModelagem,nomeCidade,arquivoModelagem,arquivoQrCode,nomeCheckpoint) {
     try {
-      const modelagem = await Modelagem.findByIdAndUpdate(
-        id,
-        {
-          nomeModelagem,
-          nomeCidade,
-          arquivoModelagem,
-          arquivoQrCode,
-          nomeCheckpoint,
-        },
-        { new: true }
-      );
-      console.log(`Modelagem com id ${id} atualizada com sucesso!`);
+      // Build update object only with fields that were provided (!== undefined)
+      const updateData = {};
+      if (nomeModelagem !== undefined) updateData.nomeModelagem = nomeModelagem;
+      if (nomeCidade !== undefined) updateData.nomeCidade = nomeCidade;
+      // arquivoModelagem and arquivoQrCode: undefined => don't touch; null => clear; string => set
+      if (arquivoModelagem !== undefined) updateData.arquivoModelagem = arquivoModelagem;
+      if (arquivoQrCode !== undefined) updateData.arquivoQrCode = arquivoQrCode;
+      if (nomeCheckpoint !== undefined) updateData.nomeCheckpoint = nomeCheckpoint;
+
+      const modelagem = await Modelagem.findByIdAndUpdate(id, updateData, { new: true });
+      if (modelagem) {
+        console.log(`Modelagem com id ${id} atualizada com sucesso!`);
+      } else {
+        console.log(`Nenhuma modelagem encontrada com id ${id} para atualizar.`);
+      }
       return modelagem;
     } catch (error) {
       console.log(error);

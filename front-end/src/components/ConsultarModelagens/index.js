@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 // 1. Adjust CSS module import if needed
 import style from "@/components/ConsultarModelagens/ConsultarModelagens.module.css";
 import dynamic from 'next/dynamic';
-import { getModelagens, createModelagem, deleteModelagem, getCheckpoints } from '@/services/api';
+import { getModelagens, createModelagem, updateModelagem, deleteModelagem, getCheckpoints } from '@/services/api';
 
 const ModalViewer3D = dynamic(
     () => import('@/components/ModalViewer3D'),
@@ -24,6 +24,9 @@ const ConsultarModelagens = () => {
     const [arquivoQrCodeFileName, setArquivoQrCodeFileName] = useState(''); // Display name
     const [arquivoModelagemFile, setArquivoModelagemFile] = useState(null); // File object (ZIP)
     const [arquivoModelagemFileName, setArquivoModelagemFileName] = useState(''); // Display name
+    const [arquivoQrCodeExistente, setArquivoQrCodeExistente] = useState(''); // path stored in DB
+    const [arquivoModelagemExistente, setArquivoModelagemExistente] = useState(''); // path stored in DB
+    const [editingId, setEditingId] = useState(null);
 
     const [modelagens, setModelagens] = useState([]); // List for table
     const [checkpoints, setCheckpoints] = useState([]); // List for dropdown
@@ -89,8 +92,21 @@ const ConsultarModelagens = () => {
     };
 
     const handleEditClick = (modelagem) => {
-        alert("Função de 'Editar Modelagem' não implementada (MVP).");
-        // Future logic: Populate form, change button, call updateModelagem
+        // Populate form with existing data for editing
+        setNomeModelagem(modelagem.nomeModelagem || '');
+        setNomeCidade(modelagem.nomeCidade || '');
+        setNomeCheckpoint(modelagem.nomeCheckpoint || '');
+        // store existing file paths so we can send them if user doesn't change files
+        setArquivoQrCodeExistente(modelagem.arquivoQrCode || '');
+        setArquivoModelagemExistente(modelagem.arquivoModelagem || '');
+        // Reset selected File objects (user can choose new ones)
+        setArquivoQrCodeFile(null);
+        setArquivoModelagemFile(null);
+        setArquivoQrCodeFileName(modelagem.arquivoQrCode ? modelagem.arquivoQrCode.split('/').pop() : '');
+        setArquivoModelagemFileName(modelagem.arquivoModelagem ? modelagem.arquivoModelagem.split('/').pop() : '');
+        setEditingId(modelagem._id);
+        // Optionally scroll to form or focus
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const clearForm = () => {
@@ -101,6 +117,9 @@ const ConsultarModelagens = () => {
         setArquivoQrCodeFileName('');
         setArquivoModelagemFile(null);
         setArquivoModelagemFileName('');
+        setArquivoQrCodeExistente('');
+        setArquivoModelagemExistente('');
+        setEditingId(null);
         // Reset file input fields visually
         const qrInput = document.getElementById('upload-arquivoQrCode'); // Use correct ID
         const zipInput = document.getElementById('upload-arquivoModelagem'); // Use correct ID
@@ -138,34 +157,55 @@ const ConsultarModelagens = () => {
         e.preventDefault();
 
         // Basic validation for files
-        if (!arquivoQrCodeFile || !arquivoModelagemFile) {
+        // If we're editing, files are optional; if creating, require both
+        if (!editingId && (!arquivoQrCodeFile || !arquivoModelagemFile)) {
             alert("Por favor, selecione a imagem do QR Code e o arquivo .zip da modelagem.");
             return;
         }
 
         const formData = new FormData();
 
-        // Append text fields (match controller req.body and service names)
+        // Append text fields
         formData.append('nomeModelagem', nomeModelagem);
         formData.append('nomeCidade', nomeCidade);
         formData.append('nomeCheckpoint', nomeCheckpoint);
 
-        // Append files (match multer field names: 'arquivoQrCode', 'arquivoModelagem')
-        formData.append('arquivoQrCode', arquivoQrCodeFile);
-        formData.append('arquivoModelagem', arquivoModelagemFile);
+        // Files: if new files selected, append them; otherwise append existing path strings so backend preserves
+        if (arquivoQrCodeFile) {
+            formData.append('arquivoQrCode', arquivoQrCodeFile);
+        } else if (arquivoQrCodeExistente) {
+            formData.append('arquivoQrCode', arquivoQrCodeExistente);
+        }
+
+        if (arquivoModelagemFile) {
+            formData.append('arquivoModelagem', arquivoModelagemFile);
+        } else if (arquivoModelagemExistente) {
+            formData.append('arquivoModelagem', arquivoModelagemExistente);
+        }
 
         try {
-            // Call API to create
-            const response = await createModelagem(formData);
-            if (response.status === 201) {
-                alert("Modelagem cadastrada com sucesso!");
-                clearForm(); // Clear the form
-                fetchModelagens(); // Refresh the table
+            let response;
+            if (editingId) {
+                // Update existing modelagem
+                response = await updateModelagem(editingId, formData);
+                if (response.status === 200) {
+                    alert("Modelagem atualizada com sucesso!");
+                    clearForm();
+                    setEditingId(null);
+                    fetchModelagens();
+                }
+            } else {
+                // Create new
+                response = await createModelagem(formData);
+                if (response.status === 201) {
+                    alert("Modelagem cadastrada com sucesso!");
+                    clearForm(); // Clear the form
+                    fetchModelagens(); // Refresh the table
+                }
             }
         } catch (error) {
             console.error("Erro no handleSubmit (Modelagem):", error);
-            // Display specific error from backend if available
-            alert(`Erro: ${error.response?.data?.error || "Erro ao cadastrar modelagem"}`);
+            alert(`Erro: ${error.response?.data?.error || "Erro ao cadastrar/atualizar modelagem"}`);
         }
     };
 
