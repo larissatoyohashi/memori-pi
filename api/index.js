@@ -1,28 +1,40 @@
 import express from "express";
 import mongoose from "mongoose";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// Caminhos
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 
-// Importando para ser criado no banco 
-import Checkpoint from "./models/Checkpoints.js"
+// ---- MIDDLEWARES ----
+app.use(cors({ origin: '*' }));
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+
+// ---- SERVIR FRONT E ARQUIVOS ESTÁTICOS ----
+app.use(express.static(path.join(__dirname, "front")));
+app.use(express.static(path.join(__dirname, "public")));
+app.use('/modelos', express.static(path.join(__dirname, 'public/modelos')));
+app.use('/qrcodes', express.static(path.join(__dirname, 'public/qrcodes')));
+
+// ---- MODELOS ----
+import Checkpoint from "./models/Checkpoints.js";
 import Modelagend from "./models/Modelagens.js";
 import Quizzes from "./models/Quizzes.js";
 import Rotas from "./models/Rotas.js";
 import Usuarios from "./models/Usuarios.js";
 
-// importando as rotas
+// ---- ROTAS ----
 import checkpointRoutes from "./routes/checkpointRoutes.js";
 import modelagemRoutes from "./routes/modelagemRoutes.js";
 import quizRoutes from "./routes/quizRoutes.js";
 import rotaRoutes from "./routes/rotaRoutes.js";
 import usuarioRoutes from "./routes/usuarioRoutes.js";
 
-// Configurações do Express
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
-
-app.use(express.static('public'));
-
-// Adicione o prefixo /api/ em todas as rotas
 app.use('/api/checkpoint', checkpointRoutes);
 app.use('/api/modelagem', modelagemRoutes);
 app.use('/api/quiz', quizRoutes);
