@@ -69,19 +69,28 @@ body{
 }
 
 .inputField {
+    position: relative;
     font-family: 'Louis George Cafe', sans-serif; 
     height: 54px;
     width: 100%;
     border-radius: 0.31rem;
     border: 3px solid var(--rosa);
-    
-  
     padding: 0 1.25rem; 
-    
     transition: all 0.3s ease; 
     outline: none;
 }
 
+.inputWrapper .inputField{
+    font-family: Louis George Cafe;
+    height: 54px;
+    width: 100%;
+    border-radius: 0.31rem;
+    border: 3px solid var(--rosa);
+    padding: 0 1.25rem 0 3.12rem;
+    transition: 2.0 ease;
+    outline: none;
+    box-sizing: border-box; 
+}
 .inputField:focus {
     border-color: var(--azul);
 }
@@ -235,6 +244,8 @@ body{
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+     box-sizing: border-box;
+
 }
 
 .uploadButton:hover {

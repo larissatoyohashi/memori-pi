@@ -26,7 +26,7 @@
   justify-content: center; 
   align-items: center;     
   min-height: 100vh;
-  width: 1400px;
+  width: 190dvh;
   padding: 2rem;
   box-sizing: border-box;
   background-color: var(--amarelo);

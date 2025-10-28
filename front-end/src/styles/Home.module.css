@@ -29,6 +29,9 @@
     color: var(--preto);
     display: grid;
     grid-template-columns: auto 1fr;
+    margin-top: 0;
+    margin-left: 0;
+    margin-bottom: 0;
   }
 
 .wrapperFormulario{
@@ -55,4 +58,5 @@
     color: var(--preto);
     display: grid;
     grid-template-columns: auto 2fr;
+    font-family: 'Louis George Cafe';
 }

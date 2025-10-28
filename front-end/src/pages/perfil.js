@@ -14,7 +14,7 @@ export default function Perfil() {
       </Head>
            <div className = {style.wrapperProfile}>
           <SideBar/>
-            <main className ={style.cardPerfil}>
+            <main>
             <UserProfile/>
             </main>
         </div>
