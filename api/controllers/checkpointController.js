@@ -17,8 +17,8 @@ const createCheckpoint = async (req, res) => {
   try {
   
   console.log("Recebendo requisição POST para createCheckpoint.");
-        console.log("req.body:", req.body); // VERIFIQUE ESTE AQUI
-        console.log("req.file:", req.file); // E ESTE AQUI
+        console.log("req.body:", req.body); 
+        console.log("req.file:", req.file); 
 
 
     const {
@@ -66,23 +66,58 @@ const deleteCheckpoint = async (req, res) => {
 // Funçãpo para atualizar checkpoints (CORRIGIDA)
 const updateCheckpoint = async (req, res) => {
   try {
-    // ...
-      let imagemCheckpoint = req.body.imagem_existente || null; 
-      if (req.file) {
-          // CORREÇÃO AQUI: Adicione a subpasta '/checkpoints/'
-          imagemCheckpoint = `/uploads/checkpoints/${req.file.filename}`;
-      }
-
-      const checkpoint = await checkpointService.Update(
-        // ... (resto dos campos)
-        imagemCheckpoint
-      );
-      res.status(200).json({ checkpoint });
-    // ...
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Erro interno do servidor. " });
   }
+  const id = req.params.id;
+
+  // valida ID
+  if (!ObjectId.isValid(id)) {
+    return res.status(400).json({ error: "A ID enviada é inválida." });
+  }
+
+  // Campos esperados no body
+  const {
+    nomeCheckpoint,
+    latitudeCheckpoint,
+    longitudeCheckpoint,
+    tituloRota,
+    descricaoCheckpoint,
+  } = req.body;
+
+    // imagem existente ou arquivo novo
+    let imagemCheckpoint;
+    if (req.file) {
+      // novo arquivo enviado
+      imagemCheckpoint = `/uploads/checkpoints/${req.file.filename}`;
+    } else if (req.body.imagem_existente !== undefined && req.body.imagem_existente !== "") {
+      // frontend informou a imagem existente (path) — manter
+      imagemCheckpoint = req.body.imagem_existente;
+    } else {
+      // nenhum dado de imagem enviado => deixar como undefined para NÃO sobrescrever no DB
+      imagemCheckpoint = undefined;
+    }
+
+  console.log("updateCheckpoint -> id:", id);
+  console.log("updateCheckpoint -> body:", req.body);
+  console.log("updateCheckpoint -> file:", req.file);
+
+  const checkpoint = await checkpointService.Update(
+    id,
+    nomeCheckpoint,
+    latitudeCheckpoint,
+    longitudeCheckpoint,
+    tituloRota,
+    descricaoCheckpoint,
+    imagemCheckpoint
+  );
+
+  if (!checkpoint) {
+    return res.status(404).json({ error: "Checkpoint não encontrado." });
+  }
+
+  res.status(200).json({ checkpoint });
 };
 
 // Função buscar um único Checkpoint

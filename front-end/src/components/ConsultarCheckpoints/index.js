@@ -1,35 +1,40 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react'; // Adicionado useRef
 import style from "@/components/ConsultarCheckpoints/ConsultarCheckpoints.module.css";
 
-// Importar as funções da sua camada de API
-// Ajuste o caminho se '@/' não for sua raiz 'src'
-import { getCheckpoints, createCheckpoint, deleteCheckpoint, getRotas } from '@/services/api';
+// Importar as funções da sua camada de API, incluindo updateCheckpoint
+import { getCheckpoints, createCheckpoint, deleteCheckpoint, getRotas, updateCheckpoint } from '@/services/api';
 
 const ConsultarCheckpoints = () => {
-    
+
     // --- Estados do Formulário ---
     const [nomeCheckpoint, setNomeCheckpoint] = useState('');
     const [descricaoCheckpoint, setDescricaoCheckpoint] = useState('');
-    const [rotaSelecionada, setRotaSelecionada] = useState('');
+    const [rotaSelecionada, setRotaSelecionada] = useState(''); // Armazena o tituloRota selecionado
     const [latitude, setLatitude] = useState('');
     const [longitude, setLongitude] = useState('');
-    const [capaCheckpointFile, setCapaCheckpointFile] = useState(null);
-    const [capaCheckpointFileName, setCapaCheckpointFileName] = useState('');
+    const [capaCheckpointFile, setCapaCheckpointFile] = useState(null); // O objeto File
+    const [capaCheckpointFileName, setCapaCheckpointFileName] = useState(''); // Nome para exibição
 
-    // --- Estados da Tabela ---
+    // --- Estados da Tabela e Dropdown ---
     const [checkpoints, setCheckpoints] = useState([]);
-    const [rotas, setRotas] = useState([]); 
+    const [rotas, setRotas] = useState([]);
+
+    // --- NOVO: Estado para Edição ---
+    const [idParaEditar, setIdParaEditar] = useState(null); // null = Criando, ID = Editando
+    const [nomeCapaAtual, setNomeCapaAtual] = useState(''); // Guarda nome da capa atual durante edição
+
+    // --- Ref para o Formulário ---
+    const formRef = useRef(null);
 
     // --- Efeito para Buscar Dados (GET) ---
     useEffect(() => {
         fetchCheckpoints();
-        fetchRotas();
+        fetchRotas(); // Continua buscando rotas para o dropdown
     }, []);
 
     const fetchCheckpoints = async () => {
         try {
             const response = await getCheckpoints();
-            // axios aninha a resposta em 'response.data'
             setCheckpoints(response.data.checkpoints || []);
         } catch (error) {
             console.error("Erro no fetchCheckpoints:", error);
@@ -40,32 +45,41 @@ const ConsultarCheckpoints = () => {
     const fetchRotas = async () => {
         try {
             const response = await getRotas();
-            // Assumindo que a API retorna { rotas: [...] }
-            setRotas(response.data.rotas || []); 
+            setRotas(response.data.rotas || []);
         } catch (error) {
             console.error("Erro no fetchRotas:", error);
+            // Pode omitir alerta aqui, apenas logar
         }
     };
 
     // --- Funções de Manipulação de Eventos ---
-    const handlecapaCheckpointFileChange = (e) => {
-        if (e.target.files && e.target.files[0]) {
-            setCapaCheckpointFile(e.target.files[0]);
-            setCapaCheckpointFileName(e.target.files[0].name);
-        } else {
-            setCapaCheckpointFile(null);
-            setCapaCheckpointFileName('');
-        }
-    };
 
+    // --- handleEditClick IMPLEMENTADO ---
     const handleEditClick = (checkpoint) => {
-        alert("Função de 'Editar' não implementada (MVP).");
-        // Para implementar:
-        // 1. Preencher o formulário com os dados do 'checkpoint'
-        // 2. Mudar o botão para "Atualizar"
-        // 3. No submit, chamar api.updateCheckpoint(checkpoint._id, formData)
+        console.log("Editando checkpoint:", checkpoint);
+        setIdParaEditar(checkpoint._id); // Define o ID para modo de edição
+
+        // Preenche o formulário com os dados existentes
+        setNomeCheckpoint(checkpoint.nomeCheckpoint || '');
+        setDescricaoCheckpoint(checkpoint.descricaoCheckpoint || '');
+        setRotaSelecionada(checkpoint.tituloRota || ''); // Assume que o campo no checkpoint é tituloRota
+        setLatitude(checkpoint.latitudeCheckpoint !== undefined && checkpoint.latitudeCheckpoint !== null ? String(checkpoint.latitudeCheckpoint) : '');
+        setLongitude(checkpoint.longitudeCheckpoint !== undefined && checkpoint.longitudeCheckpoint !== null ? String(checkpoint.longitudeCheckpoint) : '');
+
+        // Limpa a seleção de NOVO arquivo
+        setCapaCheckpointFile(null);
+
+        // Define o nome do arquivo ATUAL para exibição no label
+        // Assumindo que o campo da imagem no checkpoint é 'imagemCheckpoint'
+        const currentFilename = checkpoint.imagemCheckpoint ? checkpoint.imagemCheckpoint.split('/').pop() : 'Nenhuma';
+        setCapaCheckpointFileName(`Manter: ${currentFilename}`);
+        setNomeCapaAtual(currentFilename); // Guarda nome original
+
+        // Opcional: Rola para o formulário
+        formRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
+    // --- clearForm ATUALIZADO ---
     const clearForm = () => {
         setNomeCheckpoint('');
         setDescricaoCheckpoint('');
@@ -74,45 +88,97 @@ const ConsultarCheckpoints = () => {
         setLongitude('');
         setCapaCheckpointFile(null);
         setCapaCheckpointFileName('');
+        setIdParaEditar(null); // <<< Reseta o modo de edição
+        setNomeCapaAtual(''); // <<< Reseta nome da capa atual
+
+        // Limpa visualmente o input de arquivo
         const fileInput = document.getElementById('upload-capaCheckpoint');
         if (fileInput) fileInput.value = null;
     };
 
-    // --- Função de Criar (POST) ---
+    // --- NOVA FUNÇÃO: Cancelar Edição ---
+    const handleCancelEdit = () => {
+        clearForm(); // Limpa e sai do modo de edição
+    };
+
+    // --- handlecapaCheckpointFileChange ATUALIZADO ---
+    const handlecapaCheckpointFileChange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            setCapaCheckpointFile(e.target.files[0]);
+            // Mostra nome do NOVO arquivo
+            setCapaCheckpointFileName(e.target.files[0].name);
+        } else {
+            // Se cancelou a seleção, volta a mostrar o nome antigo (se estiver editando)
+            setCapaCheckpointFile(null);
+            setCapaCheckpointFileName(idParaEditar ? `Manter: ${nomeCapaAtual}` : '');
+        }
+    };
+
+    // --- Função de Criar/Atualizar (POST/PUT) ---
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         // 1. Criar o FormData
         const formData = new FormData();
-        
-        // 2. Adicionar os campos de texto
+
+        // 2. Adicionar os campos de texto SEMPRE
         formData.append('nomeCheckpoint', nomeCheckpoint);
         formData.append('descricaoCheckpoint', descricaoCheckpoint);
-        formData.append('tituloRota', rotaSelecionada);
+        formData.append('tituloRota', rotaSelecionada); // Backend espera 'tituloRota'
         formData.append('latitudeCheckpoint', latitude);
         formData.append('longitudeCheckpoint', longitude);
 
-        // 3. Adicionar o arquivo
-        if (capaCheckpointFile) {
-            // O nome 'capaCheckpoint' DEVE ser igual ao usado no uploadCheckpoint.single()
-            formData.append('capaCheckpoint', capaCheckpointFile);
-        } else {
-             alert("Por favor, selecione uma imagem de capa.");
-             return;
-        }
+        // --- Lógica de Criação vs Atualização ---
+        if (idParaEditar) {
+            // --- ATUALIZANDO ---
+            console.log("Atualizando Checkpoint ID:", idParaEditar);
 
-        try {
-            // 4. Chamar a API
-            const response = await createCheckpoint(formData); 
-            if (response.status === 201) {
-                alert("Checkpoint cadastrado com sucesso!");
-                clearForm();
-                fetchCheckpoints(); // Atualiza a tabela
+            // 3. Adicionar a NOVA imagem SÓ SE selecionada
+            if (capaCheckpointFile) {
+                console.log("Anexando NOVA capa:", capaCheckpointFileName);
+                // Nome 'capaCheckpoint' deve bater com uploadCheckpoint.single('capaCheckpoint')
+                formData.append('capaCheckpoint', capaCheckpointFile);
+            } else {
+                console.log("Mantendo capa existente.");
             }
-        } catch (error) {
-            console.error("Erro no handleSubmit:", error);
-            const errorMsg = error.response?.data?.error || "Erro ao cadastrar checkpoint";
-            alert(`Erro: ${errorMsg}`);
+
+            try {
+                // 4. Chamar a API de UPDATE
+                const response = await updateCheckpoint(idParaEditar, formData);
+                if (response.status === 200) { // Update bem-sucedido (geralmente 200 OK)
+                    alert("Checkpoint atualizado com sucesso!");
+                    clearForm(); // Limpa e sai do modo de edição
+                    fetchCheckpoints(); // Atualiza a tabela
+                }
+            } catch (error) {
+                console.error("Erro no handleSubmit (Update Checkpoint):", error);
+                alert(`Erro ao atualizar checkpoint: ${error.response?.data?.error || "Erro desconhecido"}`);
+                // Não limpa o form em caso de erro para permitir correção
+            }
+
+        } else {
+            // --- CRIANDO ---
+            console.log("Criando novo Checkpoint...");
+
+            // 3. Validar e adicionar a imagem (obrigatória na criação)
+            if (!capaCheckpointFile) {
+                alert("Por favor, selecione uma imagem de capa para cadastrar.");
+                return;
+            }
+            formData.append('capaCheckpoint', capaCheckpointFile);
+
+            try {
+                // 4. Chamar a API de CREATE
+                const response = await createCheckpoint(formData);
+                if (response.status === 201) { // Criação bem-sucedida
+                    alert("Checkpoint cadastrado com sucesso!");
+                    clearForm();
+                    fetchCheckpoints(); // Atualiza a tabela
+                }
+            } catch (error) {
+                console.error("Erro no handleSubmit (Create Checkpoint):", error);
+                alert(`Erro ao cadastrar checkpoint: ${error.response?.data?.error || "Erro desconhecido"}`);
+            }
         }
     };
 
@@ -123,11 +189,14 @@ const ConsultarCheckpoints = () => {
         }
 
         try {
-            // TODO: Implementar a exclusão do arquivo de imagem no backend
-            // (Opcional, mas recomendado para não acumular lixo no servidor)
+            // O backend deve cuidar da exclusão do arquivo associado
             const response = await deleteCheckpoint(id);
             if (response.status === 204) {
                 alert("Checkpoint excluído com sucesso!");
+                 // Se o item excluído era o que estava sendo editado, cancela a edição
+                if (id === idParaEditar) {
+                    clearForm();
+                }
                 fetchCheckpoints(); // Atualiza a tabela
             }
         } catch (error) {
@@ -141,15 +210,20 @@ const ConsultarCheckpoints = () => {
     // --- Renderização JSX ---
     return (
         <>
-            <div className={style.wrapperCheckpoints}>
+            {/* Adiciona ref ao wrapper */}
+            <div ref={formRef} className={style.wrapperCheckpoints}>
                 <div className={style.formCheckpoints}>
-                    <p className={style.formTitle}>Cadastro de Checkpoints</p>
+                    {/* Título Dinâmico */}
+                    <p className={style.formTitle}>
+                       {idParaEditar ? `Editando Checkpoint (ID: ...${idParaEditar.slice(-6)})` : 'Cadastro de Checkpoints'}
+                    </p>
 
                     <form onSubmit={handleSubmit} className={style.cadastroCheckpoints}>
+                        {/* Input Título */}
                         <div className={style.inputWrapper}>
-                            <input 
-                                type="text" 
-                                placeholder="Título do Checkpoint" 
+                            <input
+                                type="text"
+                                placeholder="Título do Checkpoint"
                                 className={style.inputField}
                                 value={nomeCheckpoint}
                                 onChange={(e) => setNomeCheckpoint(e.target.value)}
@@ -157,10 +231,11 @@ const ConsultarCheckpoints = () => {
                             />
                         </div>
 
+                        {/* Input Descrição */}
                         <div className={style.inputWrapper}>
-                            <input 
-                                type="text" 
-                                placeholder="Descrição do Checkpoint" 
+                            <input
+                                type="text"
+                                placeholder="Descrição do Checkpoint"
                                 className={style.inputField}
                                 value={descricaoCheckpoint}
                                 onChange={(e) => setDescricaoCheckpoint(e.target.value)}
@@ -179,8 +254,8 @@ const ConsultarCheckpoints = () => {
                                 <option value="" disabled>Selecione uma rota</option>
                                 {rotas.length > 0 ? (
                                     rotas.map((rota) => (
-                                        // Assumindo que 'rota' tem '_id' e 'nome'
-                                        <option key={rota._id} value={rota.tituloRota}> 
+                                        // Usa tituloRota como valor, pois é o que o backend espera
+                                        <option key={rota._id} value={rota.tituloRota}>
                                             {rota.tituloRota}
                                         </option>
                                     ))
@@ -190,6 +265,7 @@ const ConsultarCheckpoints = () => {
                             </select>
                         </div>
 
+                         {/* Inputs Latitude/Longitude */}
                         <div className={style.inputWrapper}>
                             <input
                                 type="number"
@@ -201,7 +277,6 @@ const ConsultarCheckpoints = () => {
                                 required
                             />
                         </div>
-
                         <div className={style.inputWrapper}>
                             <input
                                 type="number"
@@ -214,10 +289,10 @@ const ConsultarCheckpoints = () => {
                             />
                         </div>
 
-                        {/* Input de Arquivo */}
+                        {/* Input de Arquivo (Label dinâmico) */}
                         <div className={style.inputWrapper}>
                             <label htmlFor="upload-capaCheckpoint" className={style.uploadButton}>
-                                {capaCheckpointFileName ? `Capa: ${capaCheckpointFileName}` : 'Upload de capa do checkpoint'}
+                               {capaCheckpointFile ? `Nova Capa: ${capaCheckpointFileName}` : (idParaEditar ? `Capa: ${capaCheckpointFileName}` : 'Upload de capa do checkpoint')}
                             </label>
                             <input
                                 id="upload-capaCheckpoint"
@@ -225,14 +300,31 @@ const ConsultarCheckpoints = () => {
                                 accept="image/*"
                                 className={style.hiddenInput}
                                 onChange={handlecapaCheckpointFileChange}
-                                required 
+                                // Required apenas na criação
+                                required={!idParaEditar}
                             />
                         </div>
 
-                        <button type="submit">Cadastrar</button>
+                        {/* Botão Submit (Texto dinâmico) */}
+                        <button type="submit" className={style.submitButton}>
+                           {idParaEditar ? 'Atualizar Checkpoint' : 'Cadastrar'}
+                        </button>
+
+                         {/* Botão Cancelar Edição (Condicional) */}
+                         {idParaEditar && (
+                            <button
+                                type="button" // Previne submit
+                                onClick={handleCancelEdit}
+                                className={style.submitButton} // Reutiliza estilo ou cria um novo
+                                style={{ marginTop: '10px', backgroundColor: '#aaa', borderColor: '#999' }}
+                            >
+                                Cancelar Edição
+                            </button>
+                        )}
                     </form>
                 </div>
 
+                {/* Tabela */}
                 <div className={style.tableContainer}>
                     <table className={style.table}>
                         <thead>
@@ -250,15 +342,14 @@ const ConsultarCheckpoints = () => {
                         <tbody>
                             {checkpoints.length > 0 ? (
                                 checkpoints.map((checkpoint) => (
-                                    <tr key={checkpoint._id}> 
-                                        <td data-label="Id">{checkpoint._id.slice(-6)}</td> 
+                                    <tr key={checkpoint._id}>
+                                        <td data-label="Id">{checkpoint._id.slice(-6)}</td>
                                         <td>
                                             <img
-                                                // CORREÇÃO: Usando 'imagemCheckpoint'
-                                                src={checkpoint.imagemCheckpoint || "/logo_quadrado.png"} 
+                                                // CONFIRME: O campo no DB é 'imagemCheckpoint'?
+                                                src={checkpoint.imagemCheckpoint || "/logo_quadrado.png"}
                                                 className={style.tableImage}
                                                 alt="Capa do Checkpoint"
-                                                // Fallback se a imagem não carregar
                                                 onError={(e) => e.target.src = "/logo_quadrado.png"}
                                             />
                                         </td>
@@ -268,6 +359,7 @@ const ConsultarCheckpoints = () => {
                                         <td data-label="Latitude">{checkpoint.latitudeCheckpoint}</td>
                                         <td data-label="Longitude">{checkpoint.longitudeCheckpoint}</td>
                                         <td data-label="Ações">
+                                            {/* Botão Editar chama handleEditClick */}
                                             <button onClick={() => handleEditClick(checkpoint)} className={`${style.actionButton} ${style.editarButton}`}>
                                                 Editar
                                             </button>

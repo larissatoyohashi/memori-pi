@@ -52,19 +52,23 @@ async Create(
     imagemCheckpoint
   ) {
     try {
-      const checkpoint = await Checkpoint.findByIdAndUpdate(
-        id,
-        {
-          nomeCheckpoint,
-          latitudeCheckpoint,
-          longitudeCheckpoint,
-          tituloRota,
-          descricaoCheckpoint,
-          imagemCheckpoint,
-        },
-        { new: true }
-      );
-      console.log(`Checkpoint com id ${id} atualizado com sucesso!`);
+      // Monta objeto de atualização apenas com os campos enviados (não sobrescrever com undefined)
+      const updateData = {};
+      if (nomeCheckpoint !== undefined) updateData.nomeCheckpoint = nomeCheckpoint;
+      if (latitudeCheckpoint !== undefined) updateData.latitudeCheckpoint = latitudeCheckpoint;
+      if (longitudeCheckpoint !== undefined) updateData.longitudeCheckpoint = longitudeCheckpoint;
+      if (tituloRota !== undefined) updateData.tituloRota = tituloRota;
+      if (descricaoCheckpoint !== undefined) updateData.descricaoCheckpoint = descricaoCheckpoint;
+      // imagemCheckpoint pode ser undefined (não enviar), null (limpar) ou string (novo/antigo path)
+      if (imagemCheckpoint !== undefined) updateData.imagemCheckpoint = imagemCheckpoint;
+
+      const checkpoint = await Checkpoint.findByIdAndUpdate(id, updateData, { new: true });
+
+      if (checkpoint) {
+        console.log(`Checkpoint com id ${id} atualizado com sucesso!`);
+      } else {
+        console.log(`Nenhum checkpoint encontrado com id ${id} para atualizar.`);
+      }
       return checkpoint;
     } catch (error) {
       console.log(error);
