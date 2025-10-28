@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Instância do Axios
-const api = axios.create({ baseURL: '/api' });
+const api = axios.create({ baseURL: 'http://localhost:4000' });
 
 // Checkpoints 
 export const getCheckpoints = () => api.get('/checkpoint');

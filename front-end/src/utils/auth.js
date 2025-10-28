@@ -13,11 +13,12 @@ export const login = async (emailUsuario, senhaUsuario) => {
             emailUsuario,
             senhaUsuario,
         });
-        const token = res.data.token;
+        const { token, usuario } = res.data;
         localStorage.setItem("token", token);
+        localStorage.setItem("usuario", JSON.stringify(usuario));
         alert("Login realizado com sucesso!");
         axiosConfig.headers.authorization = `Bearer ${token}`;
-        return { success: true };
+        return { success: true, usuario };
     } catch (error) {
         if (error.response) {
             // O servidor respondeu com um status de erro (4xx ou 5xx)
@@ -37,6 +38,7 @@ export const login = async (emailUsuario, senhaUsuario) => {
 
 export const logout = (router) => {
     localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
     axiosConfig.headers.authorization = "";
     router.push("/login");
 }

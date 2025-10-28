@@ -1,6 +1,11 @@
 import express from "express";
 import mongoose from "mongoose";
+import cors from "cors"; // Importando o CORS
+
 const app = express();
+
+// Configurando o CORS
+app.use(cors());
 
 // Importando para ser criado no banco 
 import Checkpoint from "./models/Checkpoints.js"

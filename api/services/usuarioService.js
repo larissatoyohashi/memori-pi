@@ -7,6 +7,7 @@ class usuarioService {
             return usuarios;
         } catch (error) {
             console.log(error);
+            throw error;
         }
     }
 
