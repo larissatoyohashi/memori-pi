@@ -56,41 +56,43 @@ body{
 
 
 
- .formRegister .inputWrapper{
-    position: relative;
-    height: 35px;
-    width: 100%;
-    margin-bottom: 1.5rem;
-}
+  .formRegister .inputWrapper{
+  position: relative;
+  width: 100%;
+  margin-bottom: 1.5rem;
+  }
 
-.formRegister .inputWrapper .inputField{
-    font-family: Louis George Cafe;
-    height: 54px;
-    width: 100%;
-    border-radius: 0.31rem;
-    border: 3px solid var(--rosa);
-    padding: 0 1.25rem 0 3.12rem;
-    transition: 2.0 ease;
-    outline: none;
-}
+  .formRegister .inputWrapper .inputField{
+  font-family: Louis George Cafe;
+  height: 54px;
+  width: 100%;
+  border-radius: 0.31rem;
+  border: 3px solid var(--rosa);
+  padding: 0 1.25rem 0 3.12rem;
+  transition: 2.0 ease;
+  outline: none;
 
-.formRegister .inputWrapper .inputField:focus{
+      
+      box-sizing: border-box; 
+  }
+
+  .formRegister .inputWrapper .inputField:focus{
   border-color:var(--azul);
-}
+  }
 
-.formRegister .inputWrapper svg{
+  .formRegister .inputWrapper svg{
   fill: var(--rosa);
   position: absolute;
-  top: 75%;
+  top: 50%; /* MUDE de 75% para 50% para centralizar corretamente */
   left: 0.9rem;
   pointer-events: none;
   transform: translateY(-50%);
   height: 25px;
-}
+  }
 
-.formRegister .inputWrapper .inputField:focus ~svg{
+  .formRegister .inputWrapper .inputField:focus ~svg{
   fill:var(--azul);
-}
+  }
 
 .formLogo{
   display: flex;
@@ -124,15 +126,21 @@ body{
   text-align: center;
   font-weight: 500;
   margin: 1.75rem 0 0.31rem;
+  font-family: Louis George Cafe;
+
 }
 
 .signUp a{
   color: #FF6B6B;
   font-weight: 500;
   text-decoration: none;
+  font-family: Louis George Cafe;
+
 }
 
 .signUp a:hover{
   text-decoration: underline;
+  font-family: Louis George Cafe;
+
 }
 

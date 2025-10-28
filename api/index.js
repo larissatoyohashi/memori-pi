@@ -1,6 +1,10 @@
 import express from "express";
 import mongoose from "mongoose";
+import cors from "cors";
+
 const app = express();
+
+app.use(cors());
 
 // Importando para ser criado no banco 
 import Checkpoint from "./models/Checkpoints.js"
@@ -31,6 +35,7 @@ app.use('/api/usuario', usuarioRoutes);
 
 // Iniciando a conexão com o banco de dados do MongoDB
 const port = 4000;
+
 
 mongoose.connect("mongodb://127.0.0.1:27017/api-memori")
   .then(() => {

@@ -55,10 +55,10 @@ body{
 }
 
 
-
- .formLogin .inputWrapper{
+.formLogin .inputWrapper{
     position: relative;
-    height: 35px;
+    /* REMOVA a altura fixa. Deixe o wrapper ter a altura do input. */
+    /* height: 35px; */ 
     width: 100%;
     margin-bottom: 1.5rem;
 }
@@ -72,6 +72,10 @@ body{
     padding: 0 1.25rem 0 3.12rem;
     transition: 2.0 ease;
     outline: none;
+    
+    /* ADICIONE ISTO: */
+    /* Isso força o padding e a borda a serem contados DENTRO dos 100% */
+    box-sizing: border-box; 
 }
 
 .formLogin .inputWrapper .inputField:focus{
@@ -81,17 +85,12 @@ body{
 .formLogin .inputWrapper svg{
   fill: var(--rosa);
   position: absolute;
-  top: 75%;
+  top: 50%; /* <-- Mude de 75% para 50% para centralizar verticalmente */
   left: 0.9rem;
   pointer-events: none;
   transform: translateY(-50%);
   height: 25px;
 }
-
-.formLogin .inputWrapper .inputField:focus ~svg{
-  fill:var(--azul);
-}
-
 .formLogo{
   display: flex;
   width: 50%;
@@ -121,12 +120,14 @@ body{
 }
 
 .signUp{
+  font-family: Louis George Cafe;
   text-align: center;
   font-weight: 500;
   margin: 1.75rem 0 0.31rem;
 }
 
 .signUp a{
+  font-family: Louis George Cafe;
   color: #FF6B6B;
   font-weight: 500;
   text-decoration: none;
