@@ -1,5 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
+import cors from "cors";
 const app = express();
 
 // Importando para ser criado no banco 
@@ -17,9 +18,9 @@ import rotaRoutes from "./routes/rotaRoutes.js";
 import usuarioRoutes from "./routes/usuarioRoutes.js";
 
 // Configurações do Express
+app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-
 app.use(express.static('public'));
 
 // Adicione o prefixo /api/ em todas as rotas
