@@ -360,10 +360,10 @@ const ConsultarModelagens = () => {
                          {/* Dados mockados */}
                         <tr>
                         <td data-label="Id">01</td>
-                        <td><img src="/logo_quadrado.png" className={style.tableImage} alt="QR Code Mock"/></td>
-                        <td data-label="Título">Rota das Flores</td>
-                        <td data-label="Cidade">Holambra</td>
-                        <td data-label="Checkpoint">Rio Ribeira de Iguape</td>
+                        <td><img src="/qr.png" className={style.tableImage} alt="QR Code Mock"/></td>
+                        <td data-label="Título">Galpões do KKKK</td>
+                        <td data-label="Cidade">Registro</td>
+                        <td data-label="Checkpoint">Galpões do KKKK</td>
                          <td data-label="Modelagem">
                                    <button
                                         // *** USA O HANDLER DE MOCK AQUI ***

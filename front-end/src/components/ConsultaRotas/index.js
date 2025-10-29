@@ -73,7 +73,7 @@ const ConsultaRotas = () => {
         setDescricaoRota(rota.descricaoRota || '');
         setCidadeLocalizada(rota.cidadeLocalizada || '');
         // Garante que latitude/longitude sejam strings para o input
-        setLatitude(rota.latituteRota !== undefined && rota.latituteRota !== null ? String(rota.latituteRota) : '');
+        setLatitude(rota.latitudeRota !== undefined && rota.latitudeRota !== null ? String(rota.latitudeRota) : '');
         setLongitude(rota.longitudeRota !== undefined && rota.longitudeRota !== null ? String(rota.longitudeRota) : '');
 
 
@@ -157,7 +157,7 @@ const ConsultaRotas = () => {
         formData.append('tituloRota', tituloRota);
         formData.append('descricaoRota', descricaoRota);
         formData.append('cidadeLocalizada', cidadeLocalizada);
-        formData.append('latituteRota', latitude); // Nome esperado pelo backend
+        formData.append('latitudeRota', latitude); // Nome esperado pelo backend
         formData.append('longitudeRota', longitude); // Nome esperado pelo backend
 
         // --- Lógica de Criação vs Atualização ---
@@ -360,7 +360,7 @@ const ConsultaRotas = () => {
                                         <td data-label="Título">{rota.tituloRota}</td>
                                         <td data-label="Descrição">{rota.descricaoRota}</td>
                                         <td data-label="Cidade">{rota.cidadeLocalizada}</td>
-                                        <td data-label="Latitude">{rota.latituteRota}</td>
+                                        <td data-label="Latitude">{rota.latitudeRota}</td>
                                         <td data-label="Longitude">{rota.longitudeRota}</td>
                                         <td data-label="Ações">
                                             {/* Botão Editar chama handleEditClick */}
